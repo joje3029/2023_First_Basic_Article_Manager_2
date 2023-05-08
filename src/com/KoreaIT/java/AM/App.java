@@ -26,9 +26,6 @@ public class App {
 		makeTestData();
 		makeTestData2();
 
-		int lastArticleId = 3;
-		int lastMemberId = 3;
-
 		while (true) {
 			System.out.printf("명령어) ");
 			String cmd = sc.nextLine().trim();
@@ -49,8 +46,7 @@ public class App {
 					continue;
 				}
 				
-				int id = lastMemberId + 1;
-				lastMemberId = id;
+				int id = LastPId.getMemberLastId();
 				String regDate = Util.getNowDateStr();
 				
 				String loginId = null;
@@ -99,10 +95,29 @@ public class App {
 					continue;
 				}
 				
-				System.out.printf("로그인 아이디 : ");
-				String loginId = sc.nextLine();
-				System.out.printf("로그인 비밀번호 : ");
-				String loginPw = sc.nextLine();
+				String loginId = null;
+				String loginPw = null;
+				while(true) {
+					System.out.printf("로그인 아이디 : ");
+					loginId = sc.nextLine().trim();
+					
+					if (loginId.length() == 0) {
+						System.out.println("아이디를 입력해주세요");
+						continue;
+					}
+					
+					while(true) {
+						System.out.printf("로그인 비밀번호 : ");
+						loginPw = sc.nextLine().trim();
+						
+						if (loginPw.length() == 0) {
+							System.out.println("비밀번호를 입력해주세요");
+							continue;
+						}
+						break;
+					}
+					break;
+				}
 				
 				Member member = getMemberByLoginId(loginId);
 				
@@ -129,45 +144,25 @@ public class App {
 				this.loginedMember = null;
 				System.out.println("로그아웃 되었습니다");
 				
-			} else if (cmd.equals("member profile")) {	
+			} else if (cmd.equals("member profile")) {
 				
 				if (isLogined() == false) {
 					System.out.println("로그인 후 이용해주세요");
 					continue;
 				}
 				
-				System.out.printf("가입일자) %s \n", loginedMember.regDate);
-				System.out.printf("로그인 아이디) %s \n", loginedMember.loginId);
-				System.out.printf("이름) %s \n", loginedMember.name);
+				System.out.println("== 회원 정보 ==");
+				System.out.printf("가입날짜 : %s\n", this.loginedMember.regDate);
+				System.out.printf("로그인 아이디 : %s\n", this.loginedMember.loginId);
+				System.out.printf("이름 : %s\n", this.loginedMember.name);
 				
-			} else if (cmd.equals("member modify")) { 
-				//로그인 되어있는 나의 회원 정보를 바꾸려는 거기 때문에 기존에 cmd.startsWith("article modify")로 해서 몇번째다 그런걸 할 필요가 없으니까 조건을 하나더 넣는것임.
-				//기존의 것은 article modify 즉, 게시글에 대한 수정 이거는 회원에 대한 수정. 헷갈리지 말기
-
+			} else if (cmd.equals("member modify")) {
+				
 				if (isLogined() == false) {
 					System.out.println("로그인 후 이용해주세요");
 					continue;
 				}
-/* 내가 구현한 부분 여기서 꼬여서 다꼬였네.				
-				while(true) {
-				String PwCheck =null;
-				if (isLogined() == true) { // 굳이 로그인을 했을때를 조건으로 걸 필요가 없는데 그걸 걸어버렸네.
-					System.out.printf("비밀번호를 입력해 주세요) ");
-					PwCheck = sc.nextLine();
-					continue;
-				}
-				break;
-				}
 				
-				String modifyName = null;
-				if(loginedMember.loginPw.equals(PwCheck)) {
-					System.out.printf("수정할 이름) ");
-					modifyName = sc.next();
-				
-				}	
-				
-				modifyName = members.name;
-*/				
 				while(true) {
 					System.out.printf("로그인 비밀번호 : ");
 					String loginPw = sc.nextLine();
@@ -186,7 +181,6 @@ public class App {
 				
 				System.out.println("회원정보 수정이 완료되었습니다");
 				
-				
 			} else if (cmd.equals("article write")) {
 
 				if (isLogined() == false) {
@@ -194,8 +188,7 @@ public class App {
 					continue;
 				}
 				
-				int id = lastArticleId + 1;
-				lastArticleId = id;
+				int id = LastPId.getArticleLastId();
 				String regDate = Util.getNowDateStr();
 				System.out.printf("제목 : ");
 				String title = sc.nextLine();
@@ -270,6 +263,11 @@ public class App {
 
 			} else if (cmd.startsWith("article modify ")) {
 
+				if (isLogined() == false) {
+					System.out.println("로그인 후 이용해주세요");
+					continue;
+				}
+				
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
 
@@ -335,17 +333,17 @@ public class App {
 	private void makeTestData() {
 		System.out.println("테스트를 위한 게시글 데이터를 생성합니다");
 
-		articles.add(new Article(1, Util.getNowDateStr(), 1, "test1", "test1", 10));
-		articles.add(new Article(2, Util.getNowDateStr(), 2, "test2", "test2", 15));
-		articles.add(new Article(3, Util.getNowDateStr(), 2, "test3", "test3", 28));
+		articles.add(new Article(LastPId.getArticleLastId(), Util.getNowDateStr(), 1, "test1", "test1", 10));
+		articles.add(new Article(LastPId.getArticleLastId(), Util.getNowDateStr(), 2, "test2", "test2", 15));
+		articles.add(new Article(LastPId.getArticleLastId(), Util.getNowDateStr(), 2, "test3", "test3", 28));
 	}
 	
 	private void makeTestData2() {
 		System.out.println("테스트를 위한 회원 데이터를 생성합니다");
 		
-		members.add(new Member(1, Util.getNowDateStr(), "김철수", "김철수", "김철수"));
-		members.add(new Member(2, Util.getNowDateStr(), "김영희", "김영희", "김영희"));
-		members.add(new Member(3, Util.getNowDateStr(), "홍길동", "홍길동", "홍길동"));
+		members.add(new Member(LastPId.getMemberLastId(), Util.getNowDateStr(), "김철수", "김철수", "김철수"));
+		members.add(new Member(LastPId.getMemberLastId(), Util.getNowDateStr(), "김영희", "김영희", "김영희"));
+		members.add(new Member(LastPId.getMemberLastId(), Util.getNowDateStr(), "홍길동", "홍길동", "홍길동"));
 	}
 	
 	private Article getArticleById(int id) {
