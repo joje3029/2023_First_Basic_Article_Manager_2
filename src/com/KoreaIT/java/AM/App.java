@@ -129,6 +129,64 @@ public class App {
 				this.loginedMember = null;
 				System.out.println("로그아웃 되었습니다");
 				
+			} else if (cmd.equals("member profile")) {	
+				
+				if (isLogined() == false) {
+					System.out.println("로그인 후 이용해주세요");
+					continue;
+				}
+				
+				System.out.printf("가입일자) %s \n", loginedMember.regDate);
+				System.out.printf("로그인 아이디) %s \n", loginedMember.loginId);
+				System.out.printf("이름) %s \n", loginedMember.name);
+				
+			} else if (cmd.equals("member modify")) { 
+				//로그인 되어있는 나의 회원 정보를 바꾸려는 거기 때문에 기존에 cmd.startsWith("article modify")로 해서 몇번째다 그런걸 할 필요가 없으니까 조건을 하나더 넣는것임.
+				//기존의 것은 article modify 즉, 게시글에 대한 수정 이거는 회원에 대한 수정. 헷갈리지 말기
+
+				if (isLogined() == false) {
+					System.out.println("로그인 후 이용해주세요");
+					continue;
+				}
+/* 내가 구현한 부분 여기서 꼬여서 다꼬였네.				
+				while(true) {
+				String PwCheck =null;
+				if (isLogined() == true) { // 굳이 로그인을 했을때를 조건으로 걸 필요가 없는데 그걸 걸어버렸네.
+					System.out.printf("비밀번호를 입력해 주세요) ");
+					PwCheck = sc.nextLine();
+					continue;
+				}
+				break;
+				}
+				
+				String modifyName = null;
+				if(loginedMember.loginPw.equals(PwCheck)) {
+					System.out.printf("수정할 이름) ");
+					modifyName = sc.next();
+				
+				}	
+				
+				modifyName = members.name;
+*/				
+				while(true) {
+					System.out.printf("로그인 비밀번호 : ");
+					String loginPw = sc.nextLine();
+					
+					if (loginPw.equals(this.loginedMember.loginPw) == false) {
+						System.out.println("비밀번호가 일치하지 않습니다");
+						continue;
+					}
+					break;
+				}
+				
+				System.out.printf("수정할 이름 : ");
+				String name = sc.nextLine();
+				
+				this.loginedMember.name = name;
+				
+				System.out.println("회원정보 수정이 완료되었습니다");
+				
+				
 			} else if (cmd.equals("article write")) {
 
 				if (isLogined() == false) {
@@ -212,11 +270,6 @@ public class App {
 
 			} else if (cmd.startsWith("article modify ")) {
 
-				if (isLogined() == false) {
-					System.out.println("로그인 후 이용해주세요");
-					continue;
-				}
-				
 				String[] cmdBits = cmd.split(" ");
 				int id = Integer.parseInt(cmdBits[2]);
 
